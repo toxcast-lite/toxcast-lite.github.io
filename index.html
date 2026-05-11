@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ToxCastLite</title>
+
+        <meta
+            name="description"
+            content="ToxCastLite provides portable semantic access to ToxCast evidence stores through assay-scoped SQLite, RDF/GraphDB discovery, CPDat context, and concentration–response drill-down."
+        />
+
+        <style>
+            :root {
+                --bg: #0f172a;
+                --text: #f8fafc;
+                --muted: #cbd5e1;
+                --accent: #38bdf8;
+                --card: #ffffff;
+                --border: #e5e7eb;
+                --body: #111827;
+                --body-muted: #4b5563;
+                --soft-bg: #f8fafc;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    sans-serif;
+                background: var(--soft-bg);
+                color: var(--body);
+                line-height: 1.6;
+            }
+
+            a {
+                color: inherit;
+            }
+
+            sup a {
+                color: #2563eb;
+                text-decoration: none;
+                font-weight: 700;
+            }
+
+            sup a:hover {
+                text-decoration: underline;
+            }
+
+            .hero {
+                position: relative;
+                width: 100%;
+                height: 100vh;
+                overflow: hidden;
+                background: var(--bg);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .hero video {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .hero-overlay {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(15, 23, 42, 0.1),
+                    rgba(15, 23, 42, 0.72)
+                );
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                padding: clamp(1.5rem, 5vw, 4rem);
+                color: var(--text);
+            }
+
+            .hero-kicker {
+                margin: 0 0 0.75rem;
+                color: var(--accent);
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                font-size: 0.8rem;
+            }
+
+            .hero-overlay h1 {
+                margin: 0;
+                font-size: clamp(2.5rem, 7vw, 5.5rem);
+                letter-spacing: -0.06em;
+                line-height: 0.95;
+            }
+
+            .hero-overlay p {
+                max-width: 820px;
+                margin: 1.25rem 0 0;
+                font-size: clamp(1rem, 2vw, 1.35rem);
+                color: var(--muted);
+            }
+
+            .scroll-hint {
+                position: absolute;
+                bottom: 1.25rem;
+                right: 2rem;
+                font-size: 0.9rem;
+                color: var(--muted);
+            }
+
+            main {
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 5rem 1.5rem 4rem;
+            }
+
+            section {
+                margin-bottom: 4.5rem;
+            }
+
+            h2 {
+                font-size: clamp(1.6rem, 3vw, 2.2rem);
+                letter-spacing: -0.04em;
+                line-height: 1.1;
+                margin: 0 0 1rem;
+            }
+
+            .lead {
+                font-size: 1.15rem;
+                color: #374151;
+                max-width: 860px;
+                margin: 0;
+            }
+
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+
+            .card {
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 1rem;
+                padding: 1.25rem;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+            }
+
+            .card h3 {
+                margin: 0 0 0.5rem;
+                font-size: 1.05rem;
+                letter-spacing: -0.02em;
+            }
+
+            .card p {
+                margin: 0;
+                color: var(--body-muted);
+                font-size: 0.95rem;
+            }
+
+            .cta {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                margin-top: 2rem;
+            }
+
+            .button {
+                display: inline-block;
+                padding: 0.78rem 1.05rem;
+                border-radius: 999px;
+                text-decoration: none;
+                font-weight: 700;
+                background: var(--bg);
+                color: white;
+                border: 1px solid var(--bg);
+                transition:
+                    transform 0.15s ease,
+                    opacity 0.15s ease;
+            }
+
+            .button:hover {
+                transform: translateY(-1px);
+                opacity: 0.92;
+            }
+
+            .button.secondary {
+                background: white;
+                color: var(--bg);
+                border: 1px solid #cbd5e1;
+            }
+
+            .refs {
+                padding-left: 1.2rem;
+                color: #374151;
+                font-size: 0.95rem;
+            }
+
+            .refs li {
+                margin-bottom: 0.9rem;
+            }
+
+            .refs li:target {
+                background: #e0f2fe;
+                border-radius: 0.5rem;
+                padding: 0.5rem;
+            }
+
+            .small-note {
+                margin-top: 1rem;
+                color: #64748b;
+                font-size: 0.95rem;
+            }
+
+            .small-note a {
+                color: #334155;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            .small-note a:hover {
+                text-decoration: underline;
+            }
+
+            footer {
+                padding: 2rem 1.5rem;
+                text-align: center;
+                color: #64748b;
+                font-size: 0.9rem;
+                border-top: 1px solid #e5e7eb;
+                background: #ffffff;
+            }
+
+            footer a {
+                color: #0f172a;
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+            footer a:hover {
+                text-decoration: underline;
+            }
+
+            @media (max-width: 700px) {
+                .hero-overlay {
+                    padding-bottom: 4.5rem;
+                }
+
+                .scroll-hint {
+                    right: auto;
+                    left: 1.5rem;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="hero">
+            <!-- Replace these paths with your actual demo video and poster image -->
+            <video autoplay muted loop playsinline poster="assets/poster.png">
+                <source src="assets/toxcastlite-demo.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+
+            <div class="hero-overlay">
+                <p class="hero-kicker">
+                    Portable semantic access to ToxCast evidence
+                </p>
+                <h1>ToxCastLite</h1>
+                <p>
+                    Assay-scoped SQLite evidence stores, RDF/GraphDB discovery,
+                    CPDat product-use context, and drill-down to
+                    concentration–response evidence.
+                </p>
+                <div class="scroll-hint">Scroll ↓</div>
+            </div>
+        </header>
+
+        <main>
+            <section>
+                <h2>What is ToxCastLite?</h2>
+                <p class="lead">
+                    ToxCastLite turns the large ToxCast/invitrodb resource into
+                    portable, assay-scoped SQLite evidence stores and a compact
+                    RDF semantic layer. ToxCast provides high-throughput
+                    screening bioactivity data and concentration–response model
+                    outputs for toxicological prioritization and
+                    interpretation.<sup><a href="#ref1">[1]</a></sup
+                    ><sup><a href="#ref2">[2]</a></sup>
+                    ToxCastLite keeps dense numerical evidence in SQLite, while
+                    GraphDB exposes chemicals, assays, endpoints, model results,
+                    quality flags, and product-use context for semantic
+                    querying.
+                </p>
+            </section>
+
+            <section>
+                <h2>Why it matters</h2>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Portable evidence stores</h3>
+                        <p>
+                            Build smaller SQLite databases from the public
+                            invitrodb release for focused assay domains such as
+                            DNT-IVB, Developmental Toxicity, Thyroid
+                            Bioactivity, or other curated ToxCast assay-list
+                            scopes.
+                            <sup><a href="#ref3">[3]</a></sup>
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Semantic access</h3>
+                        <p>
+                            Query chemicals, endpoints, model results, flags,
+                            and assay scopes through an RDF/GraphDB layer
+                            instead of reconstructing complex relational joins
+                            by hand.<sup><a href="#ref6">[6]</a></sup>
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>CPDat context</h3>
+                        <p>
+                            Link bioactivity evidence to functional-use,
+                            list-presence, and product-use context from CPDat
+                            through DSSTox identifiers, while preserving the
+                            distinction between bioactivity and use-context
+                            evidence.<sup><a href="#ref4">[4]</a></sup>
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Evidence drill-down</h3>
+                        <p>
+                            Move from graph-level results back to SQLite
+                            concentration–response records for expert review,
+                            plotting, and curve-level inspection. Optional
+                            R-based workflows can support concentration–response
+                            modeling and visualization.<sup
+                                ><a href="#ref5">[5]</a></sup
+                            >
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Designed for local, auditable workflows</h2>
+                <p class="lead">
+                    ToxCastLite is intended for regulatory and scientific users
+                    who need transparent, reproducible, local access to
+                    toxicological evidence. The system supports direct SPARQL,
+                    schema-grounded query assistance, and traceable drill-down
+                    to numerical records. Rather than replacing expert
+                    judgement, it acts as a local evidence browser: GraphDB
+                    helps identify relevant chemicals, endpoints, model results,
+                    flags, and CPDat context, while SQLite preserves the
+                    detailed numerical records needed for review.
+                </p>
+
+                <div class="cta">
+                    <a
+                        class="button"
+                        href="https://www.dntox.de/#wf-form-DNTox-Footer-Reach"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        Contact DNTOX
+                    </a>
+                    <a class="button secondary" href="#references">
+                        References
+                    </a>
+                </div>
+
+                <p class="small-note">
+                    Core querying and drill-down are designed for local
+                    execution without external API dependencies.
+                </p>
+            </section>
+
+            <section id="references">
+                <h2>References</h2>
+
+                <ol class="refs">
+                    <li id="ref1">
+                        Dix, D. J., Houck, K. A., Martin, M. T., Richard, A. M.,
+                        Setzer, R. W., &amp; Kavlock, R. J. (2007). The ToxCast
+                        program for prioritizing toxicity testing of
+                        environmental chemicals.
+                        <em>Toxicological Sciences</em>, 95(1), 5–12.
+                    </li>
+
+                    <li id="ref2">
+                        Richard, A. M., Judson, R. S., Houck, K. A., Grulke, C.
+                        M., Volarath, P., Thillainadarajah, I., Yang, C.,
+                        Rathman, J., Martin, M. T., Wambaugh, J. F., et al.
+                        (2016). ToxCast chemical landscape: paving the road to
+                        21st century toxicology.
+                        <em>Chemical Research in Toxicology</em>, 29(8),
+                        1225–1251.
+                    </li>
+
+                    <li id="ref3">
+                        EPA’s Center for Computational Toxicology and Exposure.
+                        (2018).
+                        <em>ToxCast Database: invitrodb version 4.3</em>. doi:
+                        10.23645/epacomptox.6062623.v14.
+                    </li>
+
+                    <li id="ref4">
+                        Handa, S., Isaacs, K. K., Wall, J. T., Larger, A.,
+                        Burns, S., Koval, L. E., Baron-Furuyama, K., Elonen, C.
+                        M., Lyons, D., Dionisio, K. L., et al. (2025). The
+                        Chemical and Products Database v4.0, an updated resource
+                        supporting chemical exposure evaluations.
+                        <em>Scientific Data</em>, 12(1), 950.
+                    </li>
+
+                    <li id="ref5">
+                        Sheffield, T., Brown, J., Davidson, S., Friedman, K. P.,
+                        &amp; Judson, R. (2022). tcplfit2: an R-language general
+                        purpose concentration–response modeling package.
+                        <em>Bioinformatics</em>, 38(4), 1157–1158.
+                    </li>
+
+                    <li id="ref6">
+                        Angles, R., &amp; Gutierrez, C. (2008). Survey of graph
+                        database models.
+                        <em>ACM Computing Surveys</em>, 40(1), 1–39.
+                    </li>
+                </ol>
+            </section>
+        </main>
+
+        <footer>
+            ToxCastLite · Portable Semantic Access to ToxCast Evidence Stores<br />
+            Led by
+            <a
+                href="https://arifdoenmez.github.io/"
+                target="_blank"
+                rel="noopener"
+            >
+                Dr. Arif Dönmez
+            </a>
+            ·
+            <a href="https://iuf-duesseldorf.de" target="_blank" rel="noopener">
+                IUF
+            </a>
+            /
+            <a href="https://dntox.de/#" target="_blank" rel="noopener">
+                DNTOX GmbH
+            </a>
+        </footer>
+    </body>
+</html>
