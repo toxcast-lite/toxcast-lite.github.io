@@ -7,7 +7,7 @@
 
         <meta
             name="description"
-            content="ToxCastLite provides portable semantic access to ToxCast evidence stores through assay-scoped SQLite, RDF/GraphDB discovery, CPDat context, and concentration–response drill-down."
+            content="ToxCastLite is a research prototype for portable semantic access to ToxCast, ToxRefDB, and CPDat evidence through assay-scoped SQLite stores, RDF/SPARQL discovery, and concentration-response drill-down."
         />
 
         <style>
@@ -21,6 +21,8 @@
                 --body: #111827;
                 --body-muted: #4b5563;
                 --soft-bg: #f8fafc;
+                --notice-bg: #eff6ff;
+                --notice-border: #bfdbfe;
             }
 
             * {
@@ -107,7 +109,7 @@
             }
 
             .hero-overlay p {
-                max-width: 820px;
+                max-width: 860px;
                 margin: 1.25rem 0 0;
                 font-size: clamp(1rem, 2vw, 1.35rem);
                 color: var(--muted);
@@ -170,6 +172,39 @@
                 margin: 0;
                 color: var(--body-muted);
                 font-size: 0.95rem;
+            }
+
+            .notice {
+                background: var(--notice-bg);
+                border: 1px solid var(--notice-border);
+                border-radius: 1.25rem;
+                padding: 1.5rem;
+            }
+
+            .notice h2 {
+                margin-bottom: 0.75rem;
+            }
+
+            .notice .lead {
+                color: #1f2937;
+            }
+
+            .badge-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-top: 1.25rem;
+            }
+
+            .badge {
+                display: inline-block;
+                padding: 0.35rem 0.65rem;
+                border-radius: 999px;
+                background: #ffffff;
+                border: 1px solid #cbd5e1;
+                color: #334155;
+                font-size: 0.86rem;
+                font-weight: 700;
             }
 
             .cta {
@@ -278,13 +313,13 @@
 
             <div class="hero-overlay">
                 <p class="hero-kicker">
-                    Portable semantic access to ToxCast evidence
+                    Research prototype for semantic toxicology evidence access
                 </p>
                 <h1>ToxCastLite</h1>
                 <p>
-                    Assay-scoped SQLite evidence stores, RDF/GraphDB discovery,
-                    CPDat product-use context, and drill-down to
-                    concentration–response evidence.
+                    Assay-scoped SQLite evidence stores, RDF/SPARQL semantic
+                    discovery, ToxRefDB in vivo evidence, CPDat product-use
+                    context, and drill-down to concentration-response evidence.
                 </p>
                 <div class="scroll-hint">Scroll ↓</div>
             </div>
@@ -294,17 +329,21 @@
             <section>
                 <h2>What is ToxCastLite?</h2>
                 <p class="lead">
-                    ToxCastLite turns the large ToxCast database (invitrodb) resource into
-                    portable, assay-scoped SQLite evidence stores and a compact
-                    RDF semantic layer. ToxCast provides high-throughput
-                    screening bioactivity data and concentration–response model
-                    outputs for toxicological prioritization and
-                    interpretation.<sup><a href="#ref1">[1]</a></sup
+                    ToxCastLite is a research prototype and methodological use
+                    case for portable semantic access to public toxicology
+                    evidence. It turns the large ToxCast database (invitrodb)
+                    resource into assay-scoped SQLite evidence stores and a
+                    compact RDF semantic layer. ToxCast provides
+                    high-throughput screening bioactivity data and
+                    concentration-response model outputs for toxicological
+                    prioritization and interpretation.<sup><a href="#ref1">[1]</a></sup
                     ><sup><a href="#ref2">[2]</a></sup>
-                    ToxCastLite keeps dense numerical evidence in SQLite, while
-                    GraphDB exposes chemicals, assays, endpoints, model results,
-                    quality flags, and product-use context for semantic
-                    querying.
+                    ToxCastLite links these data to ToxRefDB in vivo evidence
+                    and CPDat product-use context through DSSTox identifiers.
+                    Dense numerical evidence remains in SQLite, while a
+                    standards-compliant RDF/SPARQL layer exposes chemicals,
+                    assays, endpoints, model results, quality flags, in vivo
+                    evidence, and use-context records for semantic querying.
                 </p>
             </section>
 
@@ -319,8 +358,7 @@
                             invitrodb release for focused assay domains such as
                             DNT-IVB, Developmental Toxicity, Thyroid
                             Bioactivity, or other curated ToxCast assay-list
-                            scopes.
-                            <sup><a href="#ref3">[3]</a></sup>
+                            scopes.<sup><a href="#ref3">[3]</a></sup>
                         </p>
                     </div>
 
@@ -328,9 +366,24 @@
                         <h3>Semantic access</h3>
                         <p>
                             Query chemicals, endpoints, model results, flags,
-                            and assay scopes through an RDF/GraphDB layer
+                            and assay scopes through an RDF/SPARQL layer
                             instead of reconstructing complex relational joins
-                            by hand.<sup><a href="#ref6">[6]</a></sup>
+                            by hand. GraphDB was used as the reference backend
+                            in the research prototype, but the semantic layer is
+                            designed around standards-compliant RDF and SPARQL.
+                            <sup><a href="#ref8">[8]</a></sup>
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>ToxRefDB in vivo evidence</h3>
+                        <p>
+                            Link in vitro bioactivity to processed animal-study
+                            evidence, point-of-departure records, effect
+                            summaries, and observation summaries from ToxRefDB
+                            v3.0 for transparent evidence-gap and concordance
+                            analysis.<sup><a href="#ref4">[4]</a></sup
+                            ><sup><a href="#ref5">[5]</a></sup>
                         </p>
                     </div>
 
@@ -339,9 +392,11 @@
                         <p>
                             Link bioactivity evidence to functional-use,
                             list-presence, and product-use context from CPDat
-                            through DSSTox identifiers, while preserving the
-                            distinction between bioactivity and use-context
-                            evidence.<sup><a href="#ref4">[4]</a></sup>
+                            v4.0 through DSSTox identifiers, while preserving
+                            the distinction between bioactivity, use-context
+                            evidence, and measured exposure.<sup
+                                ><a href="#ref6">[6]</a></sup
+                            >
                         </p>
                     </div>
 
@@ -349,12 +404,24 @@
                         <h3>Evidence drill-down</h3>
                         <p>
                             Move from graph-level results back to SQLite
-                            concentration–response records for expert review,
+                            concentration-response records for expert review,
                             plotting, and curve-level inspection. Optional
-                            R-based workflows can support concentration–response
+                            R-based workflows can support concentration-response
                             modeling and visualization.<sup
-                                ><a href="#ref5">[5]</a></sup
+                                ><a href="#ref7">[7]</a></sup
                             >
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Replaceable RDF backend</h3>
+                        <p>
+                            GraphDB is treated as a reference RDF/SPARQL backend
+                            for the prototype, not as a bundled component of
+                            ToxCastLite. The RDF projection, SPARQL examples,
+                            and SQLite evidence stores are separate project
+                            artifacts and can be adapted to other
+                            standards-compliant triple stores.
                         </p>
                     </div>
                 </div>
@@ -368,10 +435,11 @@
                     toxicological evidence. The system supports direct SPARQL,
                     schema-grounded query assistance, and traceable drill-down
                     to numerical records. Rather than replacing expert
-                    judgement, it acts as a local evidence browser: GraphDB
-                    helps identify relevant chemicals, endpoints, model results,
-                    flags, and CPDat context, while SQLite preserves the
-                    detailed numerical records needed for review.
+                    judgement, it acts as a local evidence browser: the RDF
+                    backend helps identify relevant chemicals, endpoints, model
+                    results, flags, ToxRefDB evidence, and CPDat context, while
+                    SQLite preserves the detailed numerical and source-level
+                    records needed for review.
                 </p>
 
                 <div class="cta">
@@ -381,7 +449,10 @@
                         target="_blank"
                         rel="noopener"
                     >
-                        Contact DNTOX
+                        Project contact
+                    </a>
+                    <a class="button secondary" href="#license-note">
+                        Licensing note
                     </a>
                     <a class="button secondary" href="#references">
                         References
@@ -390,7 +461,73 @@
 
                 <p class="small-note">
                     Core querying and drill-down are designed for local
-                    execution without external API dependencies.
+                    execution without external API dependencies. This statement
+                    refers to the prototype architecture and does not grant,
+                    transfer, or imply rights to redistribute third-party
+                    software.
+                </p>
+            </section>
+
+            <section id="license-note" class="notice">
+                <h2>Research prototype and GraphDB licensing note</h2>
+                <p class="lead">
+                    The ToxCastLite paper and this project page describe a
+                    research prototype and scientific use-case demonstration for
+                    semantic toxicology evidence integration. They do not
+                    distribute, bundle, sublicense, resell, or provide GraphDB
+                    as part of a commercial product, installer, Docker image, or
+                    hosted service.
+                </p>
+
+                <div class="badge-row">
+                    <span class="badge">Research prototype</span>
+                    <span class="badge">No GraphDB redistribution</span>
+                    <span class="badge">No sublicense grant</span>
+                    <span class="badge">Replaceable RDF/SPARQL backend</span>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>Reference implementation</h3>
+                        <p>
+                            GraphDB was used as the RDF/SPARQL backend for the
+                            reported prototype and case studies. In the
+                            architecture, it functions as a semantic query layer
+                            over project-generated RDF and local SQLite evidence
+                            stores.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Third-party license</h3>
+                        <p>
+                            GraphDB is third-party software by Ontotext / Graphwise
+                            and remains subject to the applicable GraphDB license
+                            terms, including the terms for GraphDB Free and
+                            GraphDB Enterprise.<sup><a href="#ref9">[9]</a></sup>
+                            Any installation, production use, commercial use, or
+                            redistribution of GraphDB must be licensed separately
+                            by the deploying user or institution.
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Project artifacts</h3>
+                        <p>
+                            ToxCastLite-generated RDF, SPARQL examples, SQLite
+                            builders, derived evidence stores, and schema
+                            documentation are conceptually separate from the
+                            GraphDB software. They are intended to remain usable
+                            with standards-compliant RDF triple stores and
+                            SPARQL endpoints.
+                        </p>
+                    </div>
+                </div>
+
+                <p class="small-note">
+                    This project page is an implementation and research note. It
+                    is not a GraphDB license grant and does not modify Ontotext
+                    or Graphwise licensing terms.
                 </p>
             </section>
 
@@ -403,7 +540,7 @@
                         Setzer, R. W., &amp; Kavlock, R. J. (2007). The ToxCast
                         program for prioritizing toxicity testing of
                         environmental chemicals.
-                        <em>Toxicological Sciences</em>, 95(1), 5–12.
+                        <em>Toxicological Sciences</em>, 95(1), 5-12.
                     </li>
 
                     <li id="ref2">
@@ -413,17 +550,29 @@
                         (2016). ToxCast chemical landscape: paving the road to
                         21st century toxicology.
                         <em>Chemical Research in Toxicology</em>, 29(8),
-                        1225–1251.
+                        1225-1251.
                     </li>
 
                     <li id="ref3">
-                        EPA’s Center for Computational Toxicology and Exposure.
+                        EPA's Center for Computational Toxicology and Exposure.
                         (2018).
                         <em>ToxCast Database: invitrodb version 4.3</em>. doi:
                         10.23645/epacomptox.6062623.v14.
                     </li>
 
                     <li id="ref4">
+                        EPA's Center for Computational Toxicology and Exposure.
+                        (2018). <em>ToxRefDB v3.0</em>.
+                    </li>
+
+                    <li id="ref5">
+                        Feshuk, M., Kolaczkowski, L., Watford, S., &amp; Friedman,
+                        K. P. (2023). ToxRefDB v2.1: update to curated in vivo
+                        study data in the Toxicity Reference Database.
+                        <em>Frontiers in Toxicology</em>, 5, 1260305.
+                    </li>
+
+                    <li id="ref6">
                         Handa, S., Isaacs, K. K., Wall, J. T., Larger, A.,
                         Burns, S., Koval, L. E., Baron-Furuyama, K., Elonen, C.
                         M., Lyons, D., Dionisio, K. L., et al. (2025). The
@@ -432,24 +581,29 @@
                         <em>Scientific Data</em>, 12(1), 950.
                     </li>
 
-                    <li id="ref5">
+                    <li id="ref7">
                         Sheffield, T., Brown, J., Davidson, S., Friedman, K. P.,
                         &amp; Judson, R. (2022). tcplfit2: an R-language general
-                        purpose concentration–response modeling package.
-                        <em>Bioinformatics</em>, 38(4), 1157–1158.
+                        purpose concentration-response modeling package.
+                        <em>Bioinformatics</em>, 38(4), 1157-1158.
                     </li>
 
-                    <li id="ref6">
+                    <li id="ref8">
                         Angles, R., &amp; Gutierrez, C. (2008). Survey of graph
                         database models.
-                        <em>ACM Computing Surveys</em>, 40(1), 1–39.
+                        <em>ACM Computing Surveys</em>, 40(1), 1-39.
+                    </li>
+
+                    <li id="ref9">
+                        Ontotext / Graphwise. GraphDB documentation: licensing
+                        information for GraphDB Free and GraphDB Enterprise.
                     </li>
                 </ol>
             </section>
         </main>
 
         <footer>
-            ToxCastLite · Portable Semantic Access to ToxCast Evidence Stores<br />
+            ToxCastLite · Research Prototype for Portable Semantic Toxicology Evidence Access<br />
             Led by
             <a
                 href="https://arifdoenmez.github.io/"
